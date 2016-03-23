@@ -14,14 +14,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 
 /**
  *
  * @author Andy
  */
-public class MailboxClient extends Mailbox {
-  
+public class MailboxClient extends Mailbox{
     public MailboxClient(String userName) {
         super(new Contact(userName, Config.SERVER_ADDRESS, 0, 0, true));
         
@@ -33,7 +31,7 @@ public class MailboxClient extends Mailbox {
         //client login
     public boolean login()
     {
-        //set client's port (dynamically assigned by the system)
+        //set client's port (dynamic assigned by system)
         owner.setPort(inbox.Port);
         startClientWatch();
         return updateClientStatus(DataTypes.MessageType.User_Login);
@@ -41,8 +39,7 @@ public class MailboxClient extends Mailbox {
     
     public boolean logout()
     {
-//        inbox.stopService();
-        super.stop();
+        inbox.stopService();
         stopClientWatch();
         return updateClientStatus(DataTypes.MessageType.User_Logout);
     }
@@ -62,9 +59,6 @@ public class MailboxClient extends Mailbox {
     
     public boolean send(String recipient, String msg)
     {
-        if (recipient.equals(owner))
-          return false;
-      
         Letter letter = new Letter(
                 DataTypes.MessageType.Message_Individual,
                 recipient,
@@ -162,8 +156,6 @@ public class MailboxClient extends Mailbox {
                 receiveDatagram = new DatagramPacket(buffer, buffer.length);
                 
                 while (bKeepRunning) {
-                    Arrays.fill(buffer, (byte)0); // clear buffer before receive
-                  
                     try{
                         socket.receive(receiveDatagram);
                     }catch(SocketTimeoutException e){

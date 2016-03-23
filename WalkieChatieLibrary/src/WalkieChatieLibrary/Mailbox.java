@@ -23,7 +23,7 @@ public abstract class Mailbox implements DataTypes.MessageListener
     protected final Outbox outbox;
     public final AddressBook addressBook;
     public final Contact owner;
-//    protected Contact receiver;
+    protected Contact recerver;
     public Queue<Letter> LetterQueue;
     
     public Mailbox(Contact ownerInfo)
@@ -35,7 +35,7 @@ public abstract class Mailbox implements DataTypes.MessageListener
         
         outbox = new Outbox();   
         inbox = new Inbox(owner.getPort());    
-
+        //recerver = new
         this.listeners = new ArrayList<>();
     }
     
@@ -44,11 +44,6 @@ public abstract class Mailbox implements DataTypes.MessageListener
     {
         inbox.addNewMessageListener(this);
         inbox.start();
-    }
-    
-    public void stop() {
-        inbox.stopService();
-        addressBook.map.clear();
     }
     
     protected synchronized void stackLetter(Letter letter) {

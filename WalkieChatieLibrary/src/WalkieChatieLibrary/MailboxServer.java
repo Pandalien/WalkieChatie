@@ -40,11 +40,6 @@ public class MailboxServer extends Mailbox{
         timer.start();
     }
     
-    public void stop() {
-      timer.stop();
-      super.stop();
-    }
-    
     //server to client
     private boolean forward(Letter letter)
     {
@@ -67,17 +62,6 @@ public class MailboxServer extends Mailbox{
         
         return true;
     }
-    
-    // echo a message back to its sender 
-    private boolean echo(Letter letter) {
-      Contact recipient = addressBook.Lookup(letter.getSender());
-      if (recipient != null) {
-        outbox.send(recipient, letter);
-        return true;
-      }       
-      return false;
-    }
-    
     
     private void returnLetter(Letter letter)
     {
@@ -121,7 +105,6 @@ public class MailboxServer extends Mailbox{
             switch (msgType) {
                 case Message_Individual:
                     forward(letter);
-                    echo(letter);
                     break;
                 case Message_Broadcast:
                     broadcast(letter);
@@ -139,11 +122,6 @@ public class MailboxServer extends Mailbox{
                         addressBook.add(sender);
                         
                         readLetter(letter);
-                        
-                        //inform others
-                        timer.stop();
-                        broadcastClients();
-                        timer.restart();
                     }
                     break;
                 case User_Logout:
@@ -190,9 +168,9 @@ public class MailboxServer extends Mailbox{
             if (!you.getValue().getIsOnline()) continue;
             
             for (Map.Entry<String, Contact> other : addressBook.map.entrySet()) {
-//                if (you.getValue().getName().equals(other.getValue().getName())) continue;
+                if (you.getValue().getName().equals(other.getValue().getName())) continue;
                 
-                msg = other.getValue().getIsOnline() ? "1:":"0:";
+                msg = other.getValue().getIsOnline()? "1:":"0:";
                 msg += other.getValue().getName();
                 sendUDP(you.getValue(), msg);
             }
@@ -220,5 +198,4 @@ public class MailboxServer extends Mailbox{
             System.err.println("IOException: " + e);
         }
     }
-    
 }
